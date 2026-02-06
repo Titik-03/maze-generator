@@ -58,12 +58,6 @@ We also have a curses-based ASCII visualizer (extra feature) that can:
 - toggle between DFS and Prim’s algorithms,
 - show/hide the solution path.
 
-You can run it separately (for example):
-
-```bash
-python3 ascii_main.py
-```
-
 ### Config File
 
 Example config.txt:
@@ -141,6 +135,7 @@ path = solve_shortest_path(maze)
 ```
 
 ## Team And Project Management
+```
 . group project by **maqlil** and **mgamal**
 . **maqlil** phases:
 	. config parsing.
@@ -153,7 +148,7 @@ path = solve_shortest_path(maze)
 	. Prim’s generator
 . Tools:
 	Python, flake8, mypy, build/setuptools/wheel, Makefile.
-
+```
 ## Resources && AI Usage
 . DFS maze generation (recursive backtracker):
 	<https://weblog.jamisbuck.org/2011/2/7/maze-generation-recursive-backtracking>

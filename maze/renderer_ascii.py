@@ -96,7 +96,7 @@ def draw_maze(stdscr: Any, maze: Any) -> None:
             draw_cell(stdscr, cell, x, y, True)
     x = 0
     stdscr.addstr(y * 2 + 5, x, "\n")
-    if maze.width < 7 or maze.height < 5:
+    if maze.width < 7 + 1 or maze.height < 5 + 1:
         stdscr.addstr("width or height is too SMALL for 42 pattern\n")
     stdscr.addstr("Choose your option: \n\n", curses.color_pair(6))
     stdscr.addstr("¤ - Generate new maze ----------------(g)\n")
