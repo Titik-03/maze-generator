@@ -24,12 +24,13 @@ def ascii_main(stdscr: Any) -> None:
         generator = MazeGenerator(h, w, seed, perfect)
 
         def animation_step(m: Any) -> None:
-            draw_maze(stdscr, m)
             if animation:
+                draw_maze(stdscr, m)
                 time.sleep(0.03)
         maze = generator.generate(
             e, exit_pos, is_dfs, visualizer=animation_step
         )
+        draw_maze(stdscr, maze)
         return maze
 
     current = gen(seed_maze)
