@@ -1,7 +1,7 @@
 # main entry point
 from maze.config import load_config, ConfigError
 from maze.generator import MazeGenerator
-from maze.model import validate_walls, Cell
+from maze.model import validate_walls, Cell, MazeError
 from maze.solver import solve_shortest_path
 from ascii_main import ascii_main
 import curses
@@ -56,21 +56,25 @@ def main() -> None:
     is_dfs = True
     maze = generator.generate(config.entry, config.exit, is_dfs)
     validate_walls(maze)
-    path = solve_shortest_path(maze)
-    with open(config.output_file, "w", encoding="utf-8") as f:
-        for y in range(config.height):
-            row_str = ""
-            for x in range(config.width):
-                cell = maze.cells[y][x]
-                row_str += cell_to_hex(cell)
-            f.write(row_str + "\n")
-        f.write("\n")
-        ex, ey = config.entry
-        gx, gy = config.exit
-        f.write(f"{ex},{ey}\n")
-        f.write(f"{gx},{gy}\n")
-        f.write(path_to_directions(path))
-        f.write("\n")
+    try:
+        path = solve_shortest_path(maze)
+        with open(config.output_file, "w", encoding="utf-8") as f:
+            for y in range(config.height):
+                row_str = ""
+                for x in range(config.width):
+                    cell = maze.cells[y][x]
+                    row_str += cell_to_hex(cell)
+                f.write(row_str + "\n")
+            f.write("\n")
+            ex, ey = config.entry
+            gx, gy = config.exit
+            f.write(f"{ex},{ey}\n")
+            f.write(f"{gx},{gy}\n")
+            f.write(path_to_directions(path))
+            f.write("\n")
+    except MazeError as e:
+        print(e)
+        exit(1)
 
 
 if __name__ == "__main__":
