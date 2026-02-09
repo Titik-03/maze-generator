@@ -4,6 +4,18 @@ from typing import Dict
 
 @dataclass
 class Config:
+    """Configuration options for maze generation.
+
+    Attributes:
+        width: Maze width in number of cells.
+        height: Maze height in number of cells.
+        entry: (x, y) coordinates of the entry cell.
+        exit: (x, y) coordinates of the exit cell.
+        output_file: Path to the output file that will be written.
+        perfect: If True, generate a perfect maze (no loops); if False,
+         allow loops.
+    """
+
     width: int
     height: int
     entry: tuple[int, int]
@@ -13,10 +25,32 @@ class Config:
 
 
 class ConfigError(Exception):
+    """Raised when the configuration file is missing, invalid,
+    or inconsistent."""
+
     pass
 
 
 def load_config(path: str) -> Config:
+    """Load and validate maze configuration from a text file.
+
+    The file must contain one `KEY=VALUE` pair per line. Required keys are:
+    WIDTH, HEIGHT, ENTRY, EXIT, OUTPUT_FILE, PERFECT.
+
+    Comments (lines starting with `#`, `'''`, or `//`)
+    and blank lines are ignored.
+
+    Args:
+        path: Path to the config file.
+
+    Returns:
+        A populated `Config` instance with validated values.
+
+    Raises:
+        ConfigError: If the file cannot be read, has bad syntax
+        , is missing keys,
+        or contains invalid WIDTH/HEIGHT/ENTRY/EXIT/PERFECT values.
+    """
     raw: Dict[str, str] = {}
     try:
         with open(path, "r") as f:

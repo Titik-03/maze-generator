@@ -6,6 +6,23 @@ from .model import MazeError, Maze
 def solve_shortest_path(
     maze: Maze,
 ) -> list[tuple[int, int]]:
+    """Compute the shortest path from entry to exit using BFS.
+
+    Performs a breadth-first search over the maze graph, where edges connect
+    adjacent cells whose shared wall is open on both sides. Uses a parent grid
+    to reconstruct the path once the exit is reached.
+
+    Args:
+        maze: The Maze instance to solve. Assumes entry/exit are set and walls
+            are consistent.
+
+    Returns:
+        A list of (x, y) coordinates from the entry cell to the exit cell,
+        inclusive, representing the shortest path in number of steps.
+
+    Raises:
+        MazeError: If there is no valid path from entry to exit.
+    """
     visited: list[list[bool]] = []
     for y in range(maze.height):
         row: list[bool] = []

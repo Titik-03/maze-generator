@@ -4,6 +4,12 @@ from typing import Any
 
 
 def setup_colors() -> None:
+    """Initialize curses color pairs with random foreground/background colors.
+
+    Chooses a small palette of random colors (depending on terminal color
+    support) and assigns them to color pairs used when drawing the maze,
+    the path, and the 42 pattern.
+    """
     curses.start_color()
     curses.use_default_colors()
     if curses.COLORS == 256:
@@ -30,8 +36,23 @@ def draw_cell(
     x: int,
     y: int,
     should_i: bool,
-    cell_below_on_path: bool = False
+    cell_below_on_path: bool = False,
 ) -> None:
+    """Draw a single maze cell at logical coordinates (x, y) using curses.
+
+    Renders the cell walls, entry/exit highlighting, and optionally the
+    solution path or 42 pattern, using preconfigured color pairs.
+
+    Args:
+        stdscr: The curses screen/window to draw on.
+        cell: The Cell-like object to render
+        (expected to have wall/flag attrs).
+        x: Cell x-coordinate in the maze grid.
+        y: Cell y-coordinate in the maze grid.
+        should_i: If True, draw walls/42 pattern; if False, draw solution path.
+        cell_below_on_path: True if the cell directly below is
+        also on the path, used for nicer path rendering.
+    """
     sy = y * 2 + 1
     sx = x * 4 + 1
     wall = 1
@@ -65,29 +86,35 @@ def draw_cell(
     else:
         stdscr.addstr("▄", curses.color_pair(c))
     if cell.is_entry:
-        stdscr.addstr(sy,     sx, "███", curses.color_pair(4))
+        stdscr.addstr(sy, sx, "███", curses.color_pair(4))
         if cell.south:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(8))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(8))
         elif cell_below_on_path:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(11))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(11))
         else:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(9))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(9))
     if cell.is_exit:
-        stdscr.addstr(sy,     sx, "███", curses.color_pair(5))
+        stdscr.addstr(sy, sx, "███", curses.color_pair(5))
         if cell.south:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(7))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(7))
         elif cell_below_on_path:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(12))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(12))
         else:
-            stdscr.addstr(sy + 1,     sx, "▀▀▀", curses.color_pair(10))
+            stdscr.addstr(sy + 1, sx, "▀▀▀", curses.color_pair(10))
     if should_i:
         if cell.is_42_block:
-            stdscr.addstr(sy,     sx, "   ", curses.color_pair(patern))
-            stdscr.addstr(sy,     sx + 3, "█", curses.color_pair(patern))
+            stdscr.addstr(sy, sx, "   ", curses.color_pair(patern))
+            stdscr.addstr(sy, sx + 3, "█", curses.color_pair(patern))
             stdscr.addstr(sy + 1, sx, "▄▄▄█", curses.color_pair(patern))
 
 
 def draw_maze(stdscr: Any, maze: Any) -> None:
+    """Draw the entire maze grid and the help menu in the curses window.
+
+    Renders each cell using `draw_cell`, then prints the control instructions
+    (key bindings) below the maze. Also prints a warning if the maze is too
+    small to contain the 42 pattern.
+    """
     curses.curs_set(0)
     for y in range(maze.height):
         for x in range(maze.width):
@@ -112,13 +139,23 @@ def draw_maze(stdscr: Any, maze: Any) -> None:
 
 
 def draw_path(stdscr: Any, maze: Any) -> None:
+    """Overlay the solution path on top of an already drawn maze.
+
+    For each cell marked `on_solution_path`, redraws it using path
+    colors, then refreshes the screen.
+
+    Args:
+        stdscr: The curses screen/window to draw on.
+        maze: The Maze-like object whose cells contain
+        `on_solution_path` flags.
+    """
     for y in range(maze.height):
         for x in range(maze.width):
             cell = maze.cells[y][x]
             if cell.on_solution_path:
                 cell_below_on_path = (
-                    y + 1 < maze.height and
-                    maze.cells[y + 1][x].on_solution_path
+                    y + 1 < maze.height
+                    and maze.cells[y + 1][x].on_solution_path
                 )
                 draw_cell(stdscr, cell, x, y, False, cell_below_on_path)
 

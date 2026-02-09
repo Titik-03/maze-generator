@@ -9,6 +9,11 @@ import sys
 
 
 def cell_to_hex(cell: Cell) -> str:
+    """Encode a cell's closed walls as a single hexadecimal digit.
+
+    Bit mapping (1 = wall closed):
+        1: north, 2: east, 4: south, 8: west.
+    """
     value = 0
     if cell.north:
         value |= 1
@@ -23,6 +28,7 @@ def cell_to_hex(cell: Cell) -> str:
 
 
 def path_to_directions(path: list[tuple[int, int]]) -> str:
+    """Convert a list of (x, y) path coordinates to a NESW direction string."""
     directions = ""
     for i in range(0, len(path) - 1):
         x1, y1 = path[i]
@@ -42,21 +48,21 @@ def main() -> None:
     """Entry point for the A-Maze-ing project (placeholder)."""
     if len(sys.argv) != 2:
         print("Error")
-        return
+        exit(1)
     config_path = sys.argv[1]
     try:
         config = load_config(config_path)
     except ConfigError as e:
         print(f"Error: {e}")
-        return
+        exit(1)
     print(f"loaded config: {config}")
     generator = MazeGenerator(
         config.width, config.height, seed=22, perfect=config.perfect
     )
     is_dfs = True
     maze = generator.generate(config.entry, config.exit, is_dfs)
-    validate_walls(maze)
     try:
+        validate_walls(maze)
         path = solve_shortest_path(maze)
         with open(config.output_file, "w", encoding="utf-8") as f:
             for y in range(config.height):
@@ -80,3 +86,7 @@ def main() -> None:
 if __name__ == "__main__":
     main()
     curses.wrapper(ascii_main)
+
+
+
+maze_e = create_empty_maze()

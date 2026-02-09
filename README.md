@@ -157,6 +157,7 @@ path = solve_shortest_path(maze)
 . Python docs:
 	<https://docs.python.org/3/>
 
+
 we used an AI assistant to:
 
 Help clarify algorithm choices and other algorithms concepts.
